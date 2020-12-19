@@ -33,7 +33,7 @@ app.get('/', function(req, res){
             users.push(childData)
         });
     });
-    res.redirect('/users')
+    res.redirect('/')
 })
 app.get('/users', function(req, res){
     res.render("users/index",{users: users });
