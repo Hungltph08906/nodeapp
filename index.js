@@ -24,16 +24,7 @@ firebase.database().ref('/Users/').once('value', (snapshot) => {
     });
 });
 app.get('/', function(req, res){
-    var newUsers = []
-    users = newUsers
-    firebase.database().ref('/Users/').once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            var childKey = childSnapshot.key;
-            var childData = childSnapshot.val();
-            users.push(childData)
-        });
-    });
-    res.redirect('/')
+    res.render("users/index",{users: users });
 })
 app.get('/users', function(req, res){
     res.render("users/index",{users: users });
