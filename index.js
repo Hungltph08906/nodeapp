@@ -23,6 +23,9 @@ firebase.database().ref('/Users/').once('value', (snapshot) => {
         users.push(childData)
     });
 });
+app.get('/', function(req, res){
+    res.render("users/index",{users: users });
+})
 app.get('/users', function(req, res){
     res.render("users/index",{users: users });
 })
