@@ -1,0 +1,114 @@
+const express = require('express');
+const bodyParser = require('body-parser')
+let hbs = require('express-handlebars');
+const app = express();
+const port = 8080;
+const ofirebase = require('./firebase/setData')
+const userModel = require('./model/userSchema');
+let api = require('./api/api');
+
+
+app.engine('.hbs', hbs({
+    extname: 'hbs',
+    defaultLayout: '',
+    layoutsDir: ''
+}))
+app.set('view engine', '.hbs');
+
+app.use(bodyParser.urlencoded({
+    extended: true,
+}));
+app.use(bodyParser.json());
+app.use(express.json());
+
+
+app.use('/api', api);
+
+
+app.get('/', function (req, res) {
+    res.render(
+        'index'
+    )
+});
+//login
+app.post('/login',
+    async (req, res) => {
+        let condition = {
+            email: req.body.emailN,
+            password: req.body.passW,
+        };
+        try {
+            const user = await userModel.findOne(condition);
+            if(!user){
+                res.render('index')
+            } else {
+                res.redirect('/user');
+            }
+        } catch (error) {
+            res.status(500).send(error);
+        }
+
+    });
+
+app.get('/signout', (req, res) => {
+    res.render('index')
+});
+
+var users = [
+    {id: 1, name: "User1", email: "user1@gmail.com", age: 31},
+    {id: 2, name: "User2", email: "user2@gmail.com", age: 20},
+    {id: 3, name: "User1", email: "user1.2@gmail.com", age: 25}
+];
+
+app.get('/users', function(req, res){
+    res.render("users/index",{users: users});
+})
+
+app.get('/users/search', (req,res) => {
+    var name_search = req.query.name // lấy giá trị của key name trong query parameters gửi lên
+
+    var result = users.filter( (user) => {
+        // tìm kiếm chuỗi name_search trong user name.
+        // Lưu ý: Chuyển tên về cùng in thường hoặc cùng in hoa để không phân biệt hoa, thường khi tìm kiếm
+        return user.name.toLowerCase().indexOf(name_search.toLowerCase()) !== -1
+    })
+
+    res.render('users/index', {
+        users: result // render lại trang users/index với biến users bây giờ chỉ bao gồm các kết quả phù hợp
+    });
+})
+
+app.get('/users/create', (req, res) => {
+    res.render('users/create')
+})
+
+
+app.listen(port, function(err,data){
+    if (err)
+        console.log(err);
+    else
+        console.log('connected')
+})
+
+app.post('/users/create', (req, res) => {
+    users.push(req.body);
+    res.redirect('/users')
+})
+
+app.get('/users/:id', (req, res) => {
+    // Tìm user phù hợp với params id
+    var user = users.find( (user) => {
+        return user.id == parseInt(req.params.id);
+    });
+
+    // Render trang show, với một biến user được định nghĩa là user vừa tìm được
+    res.render('users/show', {
+        user: user
+    })
+})
+
+app.post("/saveData/",function (req,res) {
+    ofirebase.saveData(req.body,function (err,data) {
+        res.send(data);
+    })
+})
