@@ -104,6 +104,15 @@ app.get("/userData/",function (req,res) {
 
 app.get('/users/delete/:id',function (req, res) {
     firebase.database().ref('/Users/'+ req.params.id).remove()
+    var newUsers = []
+    users = newUsers
+    firebase.database().ref('/Users/').once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            var childKey = childSnapshot.key;
+            var childData = childSnapshot.val();
+            users.push(childData)
+        });
+    });
     console.log('xoa loi'+ req.params.id)
     res.redirect('/users')
 });
