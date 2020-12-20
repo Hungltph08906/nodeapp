@@ -22,7 +22,8 @@
     "prompt-confirm": "^2.0.4",
     "pug": "^3.0.0",
     "state": "^0.2.0",
-    "state-control": "^2.1.2"
+    "state-control": "^2.1.2",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
     "firebase-functions": "^3.13.0"

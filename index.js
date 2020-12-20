@@ -26,13 +26,15 @@ app.set('views', './views');
 app.set('view engine', 'pug');
 app.set('view engine', 'hbs');
 
+var checkLogin = false
+var checkUID, checkEmail, checkPhone
+var users = [];
 app.get('/', function (req, res) {
+    checkLogin = false
     res.render(
         'index'
     )
 });
-var checkLogin = false
-var users = [];
 firebase.database().ref('/Users/').once('value', (snapshot) => {
     snapshot.forEach((childSnapshot) => {
         var childKey = childSnapshot.key;
@@ -102,7 +104,7 @@ app.get('/users/update/:id', (req, res) => {
         if (UTypeId === "0") {
             UType = "Trung tam"
         }
-        res.render('users/update', {
+        res.render('users/update'+ req.params.id, {
             viewTitle: 'Sửa thông tin',
             uid: req.params.id,
             name: Uname,
@@ -130,7 +132,37 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({extended: true}))
 
 app.post('/users/create', (req, res) => {
+    var result = users.filter((user) => {
+        if (user.uid === req.body.uid){
+            return user.uid.toLowerCase().indexOf(req.body.uid.toLowerCase()) !== -1
+        }
 
+    })
+    var result2 = users.filter((user) => {
+        if (user.email === req.body.email){
+            return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
+        }
+    })
+    var result3 = users.filter((user) => {
+        if (user.phone !== req.body.email.phone){
+            if (user.phone === req.body.phone){
+                return user.phone.toLowerCase().indexOf(req.body.phone.toLowerCase()) !== -1
+            }
+        }
+    })
+    if (result.length === 1){
+        res.render('users/create', {viewTitle: 'Thêm thất bại',
+            checkUid: "Uid đã được sử dụng với một tài khoản khác"
+        })
+    } else if (result2.length === 1){
+        res.render('users/create', {viewTitle: 'Thêm thất bại',
+            checkEmail: "Email đã được sử dụng với một tài khoản khác"
+        })
+    } else if (result3.length === 1){
+        res.render('users/create', {viewTitle: 'Thêm thất bại',
+            checkPhone: "SĐT đã được sử dụng với một tài khoản khác"
+        })
+    } else {
         ofirebase.saveData(req.body, function (err, data) {
             res.send(data);
         })
@@ -145,13 +177,38 @@ app.post('/users/create', (req, res) => {
         });
         res.redirect('/users')
 
-
+    }
     console.log(result.length)
 
 })
 
 app.post('/users/update/:id', (req, res) => {
 
+    var emailN = req.body.email
+    var phoneN = req.body.phone
+    var result2 = users.filter((user) => {
+        if (user.email !== emailN) {
+            if (user.email === req.body.email){
+                return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
+            }
+        }
+    })
+    var result3 = users.filter((user) => {
+        if (user.phone !== phoneN){
+            if (user.phone === req.body.phone){
+                return user.phone.toLowerCase().indexOf(req.body.phone.toLowerCase()) !== -1
+            }
+        }
+    })
+     if (result2.length === 1){
+         res.render('users/update/' + req.params.id, {viewTitle: 'Sửa thất bại',
+             checkEmail: "Email đã được sử dụng với một tài khoản khác"
+         })
+    } else if (result3.length === 1){
+         res.render('users/create' + req.params.id, {viewTitle: 'Sửa thất bại',
+             checkEmail: "Phone đã được sử dụng với một tài khoản khác"
+         })
+     } else {
         ofirebase.saveData(req.body, function (err, data) {
             res.send(data);
         })
@@ -165,7 +222,7 @@ app.post('/users/update/:id', (req, res) => {
             });
         });
         res.redirect('/users')
-
+    }
 })
 
 
@@ -227,7 +284,7 @@ app.post('/login',
             checkLogin = true
             res.redirect('/users')
         } else {
-            res.redirect('/',{
+            res.render('index',{
                 loginFail: "Tài khoản hoặc mật khẩu không chính xác"
             })
         }
@@ -235,5 +292,6 @@ app.post('/login',
 
     });
 app.get('/signout', (req, res) => {
+    checkLogin = false
     res.redirect('/')
 });
