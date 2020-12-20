@@ -145,7 +145,7 @@ app.post('/users/create', (req, res) => {
         }
     })
     var result3 = users.filter((user) => {
-        if (user.phone !== req.body.email.phone){
+        if (user.phone !== req.body.phone){
             if (user.phone === req.body.phone){
                 return user.phone.toLowerCase().indexOf(req.body.phone.toLowerCase()) !== -1
             }
