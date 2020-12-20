@@ -38,15 +38,6 @@ firebase.database().ref('/Users/').once('value', (snapshot) => {
     });
 });
 app.get('/users', function (req, res) {
-    var newU = []
-    users = newU
-    firebase.database().ref('/Users/').once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            var childKey = childSnapshot.key;
-            var childData = childSnapshot.val();
-            users.push(childData)
-        });
-    });
     res.render("users/index", {users: users});
 })
 
@@ -83,7 +74,7 @@ app.get('/users/update/:id', (req, res) => {
         }
 
     })
-    res.render('users/create', {
+    res.render('users/update', {
         viewTitle: 'Sửa thông tin',
         uid: req.params.id,
         name: Uname,
@@ -107,12 +98,7 @@ app.listen(port, function (err, data) {
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({extended: true}))
 
-app.post('/users/create/:id', (req, res) => {
-    // var result = users.filter((user) => {
-    //     // tìm kiếm chuỗi name_search trong user name.
-    //     // Lưu ý: Chuyển tên về cùng in thường hoặc cùng in hoa để không phân biệt hoa, thường khi tìm kiếm
-    //     return user.uid.toLowerCase().indexOf(req.params.id.toLowerCase()) !== -1
-    // })
+app.post('/users/create', (req, res) => {
     ofirebase.saveData(req.body, function (err, data) {
         res.send(data);
     })
@@ -128,13 +114,19 @@ app.post('/users/create/:id', (req, res) => {
     res.redirect('/users')
 })
 
-app.put('/users/update/:id', (req, res) => {
-    oUpdateData.updateData(req.body, function (data) {
+app.post('/users/update/:id', (req, res) => {
+    ofirebase.saveData(req.body, function (err, data) {
         res.send(data);
     })
-    firebase.database().ref('/Users/' + req.params.id).remove()
-    console.log('xoa loi' + req.params.id)
-    users.push(req.body);
+    var newU = []
+    users = newU
+    firebase.database().ref('/Users/').once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            var childKey = childSnapshot.key;
+            var childData = childSnapshot.val();
+            users.push(childData)
+        });
+    });
     res.redirect('/users')
 })
 
