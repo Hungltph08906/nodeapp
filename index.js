@@ -30,13 +30,9 @@ var checkLogin = false
 var checkUID, checkEmail, checkPhone
 var users = [];
 app.get('/', function (req, res) {
-    if (checkLogin === true){
-        res.redirect('/users')
-    } else {
         res.render(
             'index'
         )
-    }
 });
 firebase.database().ref('/Users/').once('value', (snapshot) => {
     snapshot.forEach((childSnapshot) => {
@@ -45,7 +41,44 @@ firebase.database().ref('/Users/').once('value', (snapshot) => {
         users.push(childData)
     });
 });
-app.get('/users', function (req, res) {
+var UID
+app.post('/login',
+    function (req, res) {
+        let condition = {
+            username: req.body.emailN,
+            password: req.body.passW
+        };
+        // lấy giá trị của key name trong query parameters gửi lên
+
+        var result = users.filter((user) => {
+            // tìm kiếm chuỗi name_search trong user name.
+            // Lưu ý: Chuyển tên về cùng in thường hoặc cùng in hoa để không phân biệt hoa, thường khi tìm kiếm
+            if (condition.username.toLowerCase().indexOf(user.email.toLowerCase()) !== -1 &&
+                user.email.toLowerCase().indexOf(condition.username.toLowerCase()) !== -1 &&
+                condition.password.toLowerCase().indexOf(user.password.toLowerCase()) !== -1 &&
+                user.password.toLowerCase().indexOf(condition.password.toLowerCase()) !== -1 &&
+                user.type === "3"
+            ) {
+                UID = user.uid
+                return condition.password.toLowerCase().indexOf(user.password.toLowerCase()) !== -1
+            }
+
+        })
+
+
+        if (result.length === 1) {
+            checkLogin = true
+            res.redirect('/users/'+ UID)
+        } else {
+            res.render('index',{
+                loginFail: "Tài khoản hoặc mật khẩu không chính xác"
+            })
+        }
+
+
+    });
+
+app.get('/users/:id', function (req, res) {
     if (checkLogin === true){
         res.render("users/index", {users: users});
     } else {
@@ -296,40 +329,6 @@ app.get('/users/delete/:id', function (req, res) {
     }
 });
 
-app.post('/login',
-    function (req, res) {
-        let condition = {
-            username: req.body.emailN,
-            password: req.body.passW
-        };
-        var name_search = req.query.name // lấy giá trị của key name trong query parameters gửi lên
-
-        var result = users.filter((user) => {
-            // tìm kiếm chuỗi name_search trong user name.
-            // Lưu ý: Chuyển tên về cùng in thường hoặc cùng in hoa để không phân biệt hoa, thường khi tìm kiếm
-            if (condition.username.toLowerCase().indexOf(user.email.toLowerCase()) !== -1 &&
-                user.email.toLowerCase().indexOf(condition.username.toLowerCase()) !== -1 &&
-                condition.password.toLowerCase().indexOf(user.password.toLowerCase()) !== -1 &&
-                user.password.toLowerCase().indexOf(condition.password.toLowerCase()) !== -1 &&
-                user.type === "3"
-            ) {
-                return condition.password.toLowerCase().indexOf(user.password.toLowerCase()) !== -1
-            }
-
-        })
-
-
-        if (result.length === 1) {
-            checkLogin = true
-            res.redirect('/users')
-        } else {
-            res.render('index',{
-                loginFail: "Tài khoản hoặc mật khẩu không chính xác"
-            })
-        }
-
-
-    });
 app.get('/signout', (req, res) => {
     checkLogin = false
     res.redirect('/')
