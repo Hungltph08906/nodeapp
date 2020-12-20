@@ -9,6 +9,7 @@ const oGetData = require('./firebase/getData')
 const oUpdateData = require('./firebase/updateData')
 const oDeleteData = require('./firebase/deleteData')
 const db = firebase.firestore
+const alert = require('alert')
 let api = require('./api/api');
 
 app.engine('.hbs', hbs({
@@ -115,19 +116,29 @@ app.post('/users/create', (req, res) => {
 })
 
 app.post('/users/update/:id', (req, res) => {
-    ofirebase.saveData(req.body, function (err, data) {
-        res.send(data);
+
+    var result2 = users.filter((user) => {
+        if (user.email === req.body.email){
+            return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
+        }
     })
-    var newU = []
-    users = newU
-    firebase.database().ref('/Users/').once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            var childKey = childSnapshot.key;
-            var childData = childSnapshot.val();
-            users.push(childData)
+     if (result2.length === 1){
+         alert("Email đã được sử dụng với một tài khoản khác")
+    } else {
+        ofirebase.saveData(req.body, function (err, data) {
+            res.send(data);
+        })
+        var newU = []
+        users = newU
+        firebase.database().ref('/Users/').once('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+                users.push(childData)
+            });
         });
-    });
-    res.redirect('/users')
+        res.redirect('/users')
+    }
 })
 
 

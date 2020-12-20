@@ -51,25 +51,28 @@
     <form action="/users/create" method="post" autocomplete="off">
 
         <input type="hidden" id="uid"
-               name="uid" value="{{uid}}">
+               name="uid" value="{{uid}}"
+               required="required ">
 
         <div class="form-group">
             <label for="uid">UID:</label>
             <input type="text" id="uid" {{status}}
                    name="uid" class="form-control"
-                   value="{{uid}}" placeholder="">
+                   value="{{uid}}" required="required "
+                   placeholder="">
         </div>
 
         <div class="form-group">
             <label for="text">Name:</label>
             <input type="text" id="name"
                    name="name" class="form-control"
-                   value="{{name}}" placeholder="">
+                   value="{{name}}"
+                   required="required " placeholder="">
         </div>
 
         <div class="form-group">
             <label for="type">Type:</label>
-            <select class="form-control" id="type" name="type">
+            <select class="form-control" id="type" name="type" required="required ">
                 <option value={{type}} hidden="hidden">{{type}}</option>
                 <option value="2">2</option>
                 <option value="1">1</option>
@@ -81,28 +84,34 @@
             <label for="email">Email:</label>
             <input type="email" id="email"
                    name="email" class="form-control"
-                   value="{{email}}" placeholder="abc@mail.com">
+                   value="{{email}}"
+                   required="required " placeholder="abc@mail.com">
         </div>
 
         <div class="form-group">
             <label for="password">Password:</label>
-            <input type="text" id="password"
+            <input type="password" id="password"
+                   minlength="6"
                    name="password" class="form-control"
-                   value="{{password}}" placeholder="">
+                   value="{{password}}"
+                   required="required "placeholder="">
         </div>
 
         <div class="form-group">
             <label for="phone">Phone:</label>
-            <input type="text" id="phone"
+            <input type="number" id="phone"
+                   maxlength="10"
                    name="phone" class="form-control"
-                   value="{{phone}}" placeholder="">
+                   value="{{phone}}"
+                   required="required "placeholder="">
         </div>
 
         <div class="form-group">
             <label for="dateOfBirth">DateOfBirth:</label>
             <input type="date" id="dateOfBirth"
                    name="dateOfBirth" class="form-control"
-                   value="{{dateOfBirth}}" placeholder="">
+                   value="{{dateOfBirth}}"
+                   required="required "placeholder="">
         </div>
 
         <div class="d-flex form-group justify-content-around">
