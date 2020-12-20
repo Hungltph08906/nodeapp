@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 //model
-const userModel = require('../firebase/setData');
+const userModel = require('../firebase/getData');
 
 
 
@@ -21,7 +21,7 @@ app.post('/signup', async (req, res) => {
         const existingUser = await userModel.findOne({email: req.body.email});
         if (!existingUser) {
             const u = new userModel(user);
-            u.saveData();
+            u.get();
             res.send('1');
             console.log(u)
         } else {
@@ -37,13 +37,13 @@ app.post('/signup', async (req, res) => {
 
 // login
 app.post('/login',
-    async (req, res) => {
+    function (req, res){
         let condition = {
             email: req.body.email,
             password: req.body.password
         };
         try {
-            const user = await userModel.findOne(condition);
+            const user = users
             if (!user) {
                 res.send('0' + req.body.email + req.body.password)
             } else {
