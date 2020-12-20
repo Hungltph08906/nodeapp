@@ -145,11 +145,9 @@ app.post('/users/create', (req, res) => {
         }
     })
     var result3 = users.filter((user) => {
-        if (user.phone !== req.body.phone){
             if (user.phone === req.body.phone){
                 return user.phone.toLowerCase().indexOf(req.body.phone.toLowerCase()) !== -1
             }
-        }
     })
     if (result.length === 1){
         res.render('users/create', {viewTitle: 'Thêm thất bại',
