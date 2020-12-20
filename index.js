@@ -104,7 +104,7 @@ app.get('/users/update/:id', (req, res) => {
         if (UTypeId === "0") {
             UType = "Trung tam"
         }
-        res.render('users/update'+ req.params.id, {
+        res.render('users/update', {
             viewTitle: 'Sửa thông tin',
             uid: req.params.id,
             name: Uname,
@@ -184,28 +184,24 @@ app.post('/users/create', (req, res) => {
 
 app.post('/users/update/:id', (req, res) => {
 
-    var emailN = req.body.email
-    var phoneN = req.body.phone
     var result2 = users.filter((user) => {
-        if (user.email !== emailN) {
+        if (user.email !== UEmail) {
             if (user.email === req.body.email){
                 return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
             }
         }
     })
     var result3 = users.filter((user) => {
-        if (user.phone !== phoneN){
+        if (user.phone !== UPhone){
             if (user.phone === req.body.phone){
                 return user.phone.toLowerCase().indexOf(req.body.phone.toLowerCase()) !== -1
             }
         }
     })
      if (result2.length === 1){
-         res.render('users/update/' + req.params.id, {viewTitle: 'Sửa thất bại',
-             checkEmail: "Email đã được sử dụng với một tài khoản khác"
-         })
+         alert("đã được sử dụng với một tài khoản khác")
     } else if (result3.length === 1){
-         res.render('users/create' + req.params.id, {viewTitle: 'Sửa thất bại',
+         res.render('users/create', {viewTitle: 'Sửa thất bại',
              checkEmail: "Phone đã được sử dụng với một tài khoản khác"
          })
      } else {
