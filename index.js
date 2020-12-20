@@ -10,6 +10,7 @@ const oUpdateData = require('./firebase/updateData')
 const oDeleteData = require('./firebase/deleteData')
 const db = firebase.firestore
 const alert = require('alert')
+const Confirm = require('prompt-confirm');
 let api = require('./api/api');
 
 app.engine('.hbs', hbs({
@@ -100,23 +101,7 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({extended: true}))
 
 app.post('/users/create', (req, res) => {
-    var result = users.filter((user) => {
-        if (user.uid === req.body.uid){
-            return user.uid.toLowerCase().indexOf(req.body.uid.toLowerCase()) !== -1
-        }
 
-    })
-    var result2 = users.filter((user) => {
-        if (user.email === req.body.email){
-            return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
-        }
-    })
-    if (result.length === 1){
-        alert("Uid đã được sử dụng với một tài khoản khác")
-
-    } else if (result2.length === 1){
-        alert("Email đã được sử dụng với một tài khoản khác")
-    } else {
         ofirebase.saveData(req.body, function (err, data) {
             res.send(data);
         })
@@ -131,34 +116,13 @@ app.post('/users/create', (req, res) => {
         });
         res.redirect('/users')
 
-    }
+
     console.log(result.length)
 
 })
 
 app.post('/users/update/:id', (req, res) => {
 
-    var emailN = req.body.email
-    var phoneN = req.body.phone
-    var result2 = users.filter((user) => {
-        if (user.email !== UEmail) {
-            if (user.email === req.body.email){
-                return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
-            }
-        }
-    })
-    var result3 = users.filter((user) => {
-        if (user.phone !== UPhone){
-            if (user.phone === req.body.phone){
-                return user.phone.toLowerCase().indexOf(req.body.phone.toLowerCase()) !== -1
-            }
-        }
-    })
-     if (result2.length === 1){
-         alert("Email đã được sử dụng với một tài khoản khác")
-    } else if (result3.length === 1){
-         alert("SĐT đã được sử dụng với một tài khoản khác")
-     } else {
         ofirebase.saveData(req.body, function (err, data) {
             res.send(data);
         })
@@ -172,7 +136,7 @@ app.post('/users/update/:id', (req, res) => {
             });
         });
         res.redirect('/users')
-    }
+
 })
 
 

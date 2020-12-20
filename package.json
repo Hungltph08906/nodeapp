@@ -19,6 +19,7 @@
     "firebase": "^8.2.0",
     "firebase-admin": "^9.4.2",
     "graphql": "^15.4.0",
+    "prompt-confirm": "^2.0.4",
     "pug": "^3.0.0",
     "state": "^0.2.0",
     "state-control": "^2.1.2"
