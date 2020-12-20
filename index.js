@@ -37,14 +37,14 @@ firebase.database().ref('/Users/').once('value', (snapshot) => {
         users.push(childData)
     });
 });
-app.get('/users', function(req, res){
-    res.render("users/index",{users: users });
+app.get('/users', function (req, res) {
+    res.render("users/index", {users: users});
 })
 
-app.get('/users/search', (req,res) => {
+app.get('/users/search', (req, res) => {
     var name_search = req.query.name // lấy giá trị của key name trong query parameters gửi lên
 
-    var result = users.filter( (user) => {
+    var result = users.filter((user) => {
         // tìm kiếm chuỗi name_search trong user name.
         // Lưu ý: Chuyển tên về cùng in thường hoặc cùng in hoa để không phân biệt hoa, thường khi tìm kiếm
         return user.name.toLowerCase().indexOf(name_search.toLowerCase()) !== -1
@@ -53,22 +53,42 @@ app.get('/users/search', (req,res) => {
     res.render('users/index', {
         users: result // render lại trang users/index với biến users bây giờ chỉ bao gồm các kết quả phù hợp
     });
+    console.log('connected'+result.name)
 })
 
 app.get('/users/create', (req, res) => {
-    res.render('users/create',{viewTitle: 'Thêm mới'})
+    res.render('users/create', {viewTitle: 'Thêm mới'})
 })
 
 app.get('/users/update/:id', (req, res) => {
-            res.render('users/create', {
-                viewTitle: 'Sửa thông tin',
-                uid: req.params.id,
-                status: 'disabled'
-            })
-    console.log('update'+ req.params.id)
+    var Uname,UEmail,UPassword,UPhone,UDateOfBirth,UType
+    var result = users.filter((user) => {
+
+        if (user.uid === req.params.id) {
+            Uname = user.name,
+            UEmail = user.email,
+            UPassword = user.password,
+            UPhone = user.phone,
+            UDateOfBirth = user.dateOfBirth,
+            UType = user.type
+        }
+
+    })
+    res.render('users/create', {
+        viewTitle: 'Sửa thông tin',
+        uid: req.params.id,
+        name: Uname,
+        email: UEmail,
+        password: UPassword,
+        phone: UPhone,
+        dateOfBirth: UDateOfBirth,
+        type: UType,
+        status: 'disabled'
+    })
+    console.log('connected')
 })
 
-app.listen(port, function(err,data){
+app.listen(port, function (err, data) {
     if (err)
         console.log(err);
     else
@@ -76,10 +96,10 @@ app.listen(port, function(err,data){
 })
 
 app.use(express.json()) // for parsing application/json
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({extended: true}))
 
 app.post('/users/create', (req, res) => {
-    ofirebase.saveData(req.body,function (err,data) {
+    ofirebase.saveData(req.body, function (err, data) {
         res.send(data);
     })
     users.push(req.body);
@@ -87,30 +107,30 @@ app.post('/users/create', (req, res) => {
 })
 
 app.put('/users/update/:id', (req, res) => {
-    oUpdateData.updateData(req.body,function (data) {
+    oUpdateData.updateData(req.body, function (data) {
         res.send(data);
     })
-    firebase.database().ref('/Users/'+ req.params.id).remove()
-    console.log('xoa loi'+ req.params.id)
+    firebase.database().ref('/Users/' + req.params.id).remove()
+    console.log('xoa loi' + req.params.id)
     users.push(req.body);
     res.redirect('/users')
 })
 
 
-app.post("/saveData/",function (req,res) {
-    ofirebase.saveData(req.body,function (err,data) {
+app.post("/saveData/", function (req, res) {
+    ofirebase.saveData(req.body, function (err, data) {
         res.send(data);
     })
 })
 
-app.get("/userData/",function (req,res) {
+app.get("/userData/", function (req, res) {
     oGetData.getData(function (data) {
         res.send(data);
     })
 })
 
-app.get('/users/delete/:id',function (req, res) {
-    firebase.database().ref('/Users/'+ req.params.id).remove()
+app.get('/users/delete/:id', function (req, res) {
+    firebase.database().ref('/Users/' + req.params.id).remove()
     var newUsers = []
     users = newUsers
     firebase.database().ref('/Users/').once('value', (snapshot) => {
@@ -120,7 +140,7 @@ app.get('/users/delete/:id',function (req, res) {
             users.push(childData)
         });
     });
-    console.log('xoa loi'+ req.params.id)
+    console.log('xoa loi' + req.params.id)
     res.redirect('/users')
 });
 
@@ -132,28 +152,28 @@ app.post('/login',
         };
         var name_search = req.query.name // lấy giá trị của key name trong query parameters gửi lên
 
-        var result = users.filter( (user) => {
+        var result = users.filter((user) => {
             // tìm kiếm chuỗi name_search trong user name.
             // Lưu ý: Chuyển tên về cùng in thường hoặc cùng in hoa để không phân biệt hoa, thường khi tìm kiếm
             if (condition.username.toLowerCase().indexOf(user.email.toLowerCase()) !== -1 &&
                 user.email.toLowerCase().indexOf(condition.username.toLowerCase()) !== -1 &&
                 condition.password.toLowerCase().indexOf(user.password.toLowerCase()) !== -1 &&
                 user.password.toLowerCase().indexOf(condition.password.toLowerCase()) !== -1
-            ){
+            ) {
                 return condition.password.toLowerCase().indexOf(user.password.toLowerCase()) !== -1
             }
 
         })
 
 
-
-        if (result.length === 1){
+        if (result.length === 1) {
             res.redirect('/users')
-        }
-        else {
+        } else {
             res.render('index')
         }
 
 
-
     });
+app.get('/signout', (req, res) => {
+    res.render('index')
+});
