@@ -28,10 +28,13 @@ app.set('view engine', 'hbs');
 
 var checkLogin = false
 var checkUID, checkEmail, checkPhone
+var UID
 var users = [];
 app.get('/', function (req, res) {
         res.render(
-            'index'
+            'index', {
+                uidL: UID
+            }
         )
 });
 firebase.database().ref('/Users/').once('value', (snapshot) => {
@@ -41,7 +44,6 @@ firebase.database().ref('/Users/').once('value', (snapshot) => {
         users.push(childData)
     });
 });
-var UID
 app.post('/login',
     function (req, res) {
         let condition = {
@@ -80,13 +82,13 @@ app.post('/login',
 
 app.get('/users/:id', function (req, res) {
     if (checkLogin === true){
-        res.render("users/index", {users: users});
+        res.render("users/index", {users: users,uidN: UID});
     } else {
         res.redirect('/')
     }
 })
 
-app.get('/users/search', (req, res) => {
+app.get('/users/search/:id', (req, res) => {
     if (checkLogin === true){
         var name_search = req.query.name // lấy giá trị của key name trong query parameters gửi lên
 
@@ -105,9 +107,9 @@ app.get('/users/search', (req, res) => {
     }
 })
 
-app.get('/users/create', (req, res) => {
+app.get('/users/create/:id', (req, res) => {
     if (checkLogin === true){
-        res.render('users/create', {viewTitle: 'Thêm mới'})
+        res.render('users/create', {viewTitle: 'Thêm mới',uidN: UID})
     } else {
         res.redirect('/')
     }
@@ -150,6 +152,7 @@ app.get('/users/update/:id', (req, res) => {
             dateOfBirth: UDateOfBirth,
             type: UType,
             UTypeId: UTypeId,
+            uidN: UID,
             status: 'disabled'
         })
         console.log(UType)
@@ -231,7 +234,7 @@ app.post('/users/create', (req, res) => {
                 users.push(childData)
             });
         });
-        res.redirect('/users')
+        res.redirect('/users/'+UID)
 
     }
     console.log(result.length)
@@ -293,7 +296,7 @@ app.post('/users/update/:id', (req, res) => {
                 users.push(childData)
             });
         });
-        res.redirect('/users')
+        res.redirect('/users/'+ UID)
     }
 })
 
@@ -322,7 +325,7 @@ app.get('/users/delete/:id', function (req, res) {
             });
         });
         console.log('xoa loi' + req.params.id)
-        res.redirect('/users')
+        res.redirect('/users/'+UID)
 
     } else {
         res.redirect('/')

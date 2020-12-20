@@ -29,7 +29,7 @@
                 <ul class="navbar-nav ml-auto">
 
                     <li class="nav-item active">
-                        <a class="nav-link" href="/users">Customer</a>
+                        <a class="nav-link" href="/users/{{uidN}}">Customer</a>
                     </li>
 
                     <li class="nav-item">
@@ -47,13 +47,13 @@
 
         <div class="d-flex justify-content-between mt-3 mb-3">
 
-            <form method="get" action="/users/create">
+            <form method="get" action="/users/create/{{uidN}}" >
                 <button type="submit"
                         class="btn btn-success">Thêm mới
                 </button>
             </form>
 
-            <form class="col-md-4 " action="/users/search" method="get">
+            <form class="col-md-4 " action="/users/search/{{uidN}}" method="get">
                 <div class="input-group ">
                     <input type="text" class="form-control"
                            placeholder="Search by  name" name="name">
