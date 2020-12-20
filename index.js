@@ -30,6 +30,13 @@ app.get('/', function (req, res) {
     )
 });
 var users = [];
+firebase.database().ref('/Users/').once('value', (snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+        var childKey = childSnapshot.key;
+        var childData = childSnapshot.val();
+        users.push(childData)
+    });
+});
 app.get('/users', function (req, res) {
     var newU = []
     users = newU
