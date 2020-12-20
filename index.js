@@ -30,10 +30,13 @@ var checkLogin = false
 var checkUID, checkEmail, checkPhone
 var users = [];
 app.get('/', function (req, res) {
-    checkLogin = false
-    res.render(
-        'index'
-    )
+    if (checkLogin === true){
+        res.redirect('/users')
+    } else {
+        res.render(
+            'index'
+        )
+    }
 });
 firebase.database().ref('/Users/').once('value', (snapshot) => {
     snapshot.forEach((childSnapshot) => {
