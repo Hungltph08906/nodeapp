@@ -60,9 +60,9 @@ app.get('/users/search', (req, res) => {
 app.get('/users/create', (req, res) => {
     res.render('users/create', {viewTitle: 'Thêm mới'})
 })
-
+var Uname,UEmail,UPassword,UPhone,UDateOfBirth,UType
 app.get('/users/update/:id', (req, res) => {
-    var Uname,UEmail,UPassword,UPhone,UDateOfBirth,UType
+
     var result = users.filter((user) => {
 
         if (user.uid === req.params.id) {
@@ -100,31 +100,65 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({extended: true}))
 
 app.post('/users/create', (req, res) => {
-    ofirebase.saveData(req.body, function (err, data) {
-        res.send(data);
+    var result = users.filter((user) => {
+        if (user.uid === req.body.uid){
+            return user.uid.toLowerCase().indexOf(req.body.uid.toLowerCase()) !== -1
+        }
+
     })
-    var newU = []
-    users = newU
-    firebase.database().ref('/Users/').once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            var childKey = childSnapshot.key;
-            var childData = childSnapshot.val();
-            users.push(childData)
-        });
-    });
-    res.redirect('/users')
-})
-
-app.post('/users/update/:id', (req, res) => {
-
     var result2 = users.filter((user) => {
         if (user.email === req.body.email){
             return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
         }
     })
+    if (result.length === 1){
+        alert("Uid đã được sử dụng với một tài khoản khác")
+
+    } else if (result2.length === 1){
+        alert("Email đã được sử dụng với một tài khoản khác")
+    } else {
+        ofirebase.saveData(req.body, function (err, data) {
+            res.send(data);
+        })
+        var newU = []
+        users = newU
+        firebase.database().ref('/Users/').once('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+                users.push(childData)
+            });
+        });
+        res.redirect('/users')
+
+    }
+    console.log(result.length)
+
+})
+
+app.post('/users/update/:id', (req, res) => {
+
+    var emailN = req.body.email
+    var phoneN = req.body.phone
+    var result2 = users.filter((user) => {
+        if (user.email !== UEmail) {
+            if (user.email === req.body.email){
+                return user.email.toLowerCase().indexOf(req.body.email.toLowerCase()) !== -1
+            }
+        }
+    })
+    var result3 = users.filter((user) => {
+        if (user.phone !== UPhone){
+            if (user.phone === req.body.phone){
+                return user.phone.toLowerCase().indexOf(req.body.phone.toLowerCase()) !== -1
+            }
+        }
+    })
      if (result2.length === 1){
          alert("Email đã được sử dụng với một tài khoản khác")
-    } else {
+    } else if (result3.length === 1){
+         alert("SĐT đã được sử dụng với một tài khoản khác")
+     } else {
         ofirebase.saveData(req.body, function (err, data) {
             res.send(data);
         })
