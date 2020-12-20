@@ -113,6 +113,7 @@ app.get('/users/update/:id', (req, res) => {
             phone: UPhone,
             dateOfBirth: UDateOfBirth,
             type: UType,
+            UTypeId: UTypeId,
             status: 'disabled'
         })
         console.log(UType)
@@ -152,15 +153,36 @@ app.post('/users/create', (req, res) => {
     })
     if (result.length === 1){
         res.render('users/create', {viewTitle: 'Thêm thất bại',
-            checkUid: "Uid đã được sử dụng với một tài khoản khác"
+            checkUid: "Uid đã được sử dụng với một tài khoản khác",
+            uid: req.body.id,
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            phone: req.body.phone,
+            dateOfBirth: req.body.dateOfBirth,
+            type: req.body.type
         })
     } else if (result2.length === 1){
         res.render('users/create', {viewTitle: 'Thêm thất bại',
-            checkEmail: "Email đã được sử dụng với một tài khoản khác"
+            checkEmail: "Email đã được sử dụng với một tài khoản khác",
+            uid: req.body.id,
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            phone: req.body.phone,
+            dateOfBirth: req.body.dateOfBirth,
+            type: req.body.type
         })
     } else if (result3.length === 1){
         res.render('users/create', {viewTitle: 'Thêm thất bại',
-            checkPhone: "SĐT đã được sử dụng với một tài khoản khác"
+            checkPhone: "SĐT đã được sử dụng với một tài khoản khác",
+            uid: req.body.uid,
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            phone: req.body.phone,
+            dateOfBirth: req.body.dateOfBirth,
+            type: req.body.type
         })
     } else {
         ofirebase.saveData(req.body, function (err, data) {
@@ -199,10 +221,30 @@ app.post('/users/update/:id', (req, res) => {
         }
     })
      if (result2.length === 1){
-         alert("đã được sử dụng với một tài khoản khác")
+         res.render('users/update', {viewTitle: 'Sửa thất bại',
+             checkEmail: "Email đã được sử dụng với một tài khoản khác",
+             uid: req.params.id,
+             name: Uname,
+             email: req.body.email,
+             password: UPassword,
+             phone: UPhone,
+             dateOfBirth: UDateOfBirth,
+             type: UType,
+             UTypeId: UTypeId,
+             status: 'disabled'
+         })
     } else if (result3.length === 1){
-         res.render('users/create', {viewTitle: 'Sửa thất bại',
-             checkEmail: "Phone đã được sử dụng với một tài khoản khác"
+         res.render('users/update', {viewTitle: 'Sửa thất bại',
+             checkPhone: "SĐT đã được sử dụng với một tài khoản khác",
+             uid: req.params.id,
+             name: Uname,
+             email: UEmail,
+             password: UPassword,
+             phone: req.body.phone,
+             dateOfBirth: UDateOfBirth,
+             type: UType,
+             UTypeId: UTypeId,
+             status: 'disabled'
          })
      } else {
         ofirebase.saveData(req.body, function (err, data) {
