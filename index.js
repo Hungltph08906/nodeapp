@@ -98,11 +98,24 @@ app.listen(port, function (err, data) {
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({extended: true}))
 
-app.post('/users/create', (req, res) => {
+app.post('/users/create/:id', (req, res) => {
+    // var result = users.filter((user) => {
+    //     // tìm kiếm chuỗi name_search trong user name.
+    //     // Lưu ý: Chuyển tên về cùng in thường hoặc cùng in hoa để không phân biệt hoa, thường khi tìm kiếm
+    //     return user.uid.toLowerCase().indexOf(req.params.id.toLowerCase()) !== -1
+    // })
     ofirebase.saveData(req.body, function (err, data) {
         res.send(data);
     })
-    users.push(req.body);
+    var newU = []
+    users = newU
+    firebase.database().ref('/Users/').once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            var childKey = childSnapshot.key;
+            var childData = childSnapshot.val();
+            users.push(childData)
+        });
+    });
     res.redirect('/users')
 })
 
